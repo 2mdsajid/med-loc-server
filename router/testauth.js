@@ -56,14 +56,14 @@ async function addNewRepeatingTest() {
 
 }
 
-addNewRepeatingTest();
+//addNewRepeatingTest();
 // Set up an interval to run the addNewTest function every day at 4pm
 setInterval(() => {
     const now = new Date();
     const hours = now.getHours();
     const minutes = now.getMinutes();
     // if (hours === 1 && minutes === 27) {
-    //     addNewRepeatingTest();
+   addNewRepeatingTest();
     // }
 
 
