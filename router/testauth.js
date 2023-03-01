@@ -31,7 +31,7 @@ async function addNewRepeatingTest() {
             duration:'1',
             repeatafter:'1'
         },
-        category: 'weeklytest'
+        category: 'daipytest'
     });
 
     // Save the new test to the database
