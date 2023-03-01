@@ -10,15 +10,16 @@ const newTestSchema = require('../models/newTestSchema')
 async function addNewRepeatingTest() {
     // Getting the total tests with that category
     // const newtest = await newTestSchema.find()
-    const newtest = await newTestSchema.find({ category: 'weeklytest' })
-    const suffix =  newtest.length
+    const newtest = await newTestSchema.find({ category: 'dailytest' })
+    //const suffix =  newtest.length
+    const suffix = 69
     console.log('all data',newtest)
 
     const testname = `dt${suffix}`
 
     // Create a new instance of the NewTest model with the current date and time
     const newTest = new newTestSchema({
-        testtitle: `weekly test ${suffix}`,
+        testtitle: `daily test ${suffix}`,
         testname: testname,
         physics: '2',
         chemistry: '2',
@@ -26,8 +27,8 @@ async function addNewRepeatingTest() {
         mat: '2',
         time: {
             type:'timed',
-            value:'1',
-            duration:'0',
+            value:'10',
+            duration:'1',
             repeatafter:'1'
         },
         category: 'weeklytest'
@@ -50,12 +51,12 @@ async function addNewRepeatingTest() {
 
         console.log(newtest)
 
-    }, 240000);
+    }, 3600000);
 
 
 }
 
-// addNewRepeatingTest();
+addNewRepeatingTest();
 // Set up an interval to run the addNewTest function every day at 4pm
 setInterval(() => {
     const now = new Date();
