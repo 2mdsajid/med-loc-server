@@ -4,6 +4,8 @@ const AuthUserMiddleware = require('../middlewares/AuthUserMiddleware')
 
 const newTestSchema = require('../models/newTestSchema')
 
+//making a commit
+
 // Set up a function to add a new test every day at 4pm
 async function addNewRepeatingTest() {
     // Getting the total tests with that category
