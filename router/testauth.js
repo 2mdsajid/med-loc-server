@@ -27,11 +27,11 @@ async function addNewRepeatingTest() {
         mat: '2',
         time: {
             type:'timed',
-            value:'12',
+            value:'2',
             duration:'1',
             repeatafter:'1'
         },
-        category: 'daipytest'
+        category: 'dailytest'
     });
 
     // Save the new test to the database
@@ -51,7 +51,7 @@ async function addNewRepeatingTest() {
 
         console.log(newtest)
 
-    }, 3600000);
+    }, 1800000);
 
 
 }
@@ -63,7 +63,7 @@ setInterval(() => {
     const hours = now.getHours();
     const minutes = now.getMinutes();
   
-   //addNewRepeatingTest();
+//    addNewRepeatingTest();
    
 
 
