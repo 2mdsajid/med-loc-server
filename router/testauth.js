@@ -62,9 +62,9 @@ setInterval(() => {
     const now = new Date();
     const hours = now.getHours();
     const minutes = now.getMinutes();
-    // if (hours === 1 && minutes === 27) {
+  
    addNewRepeatingTest();
-    // }
+   
 
 
 }, 10000); // Check every minute
