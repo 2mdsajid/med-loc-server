@@ -17,8 +17,11 @@ router.post('/usersignup', async (req, res) => {
         const saveuser = await user.save()
 
         if (saveuser) {
-            res.status(201).json(user)
-            console.log("user sent successfully")
+
+            usertoken = await saveuser.GenerateAuthToken()
+
+            res.status(201).json({'usertoken':usertoken})
+            console.log("user sent successfully",usertoken)
         } else {
             res.status(500).json('user sent failed')
             console.log("user sent not successfully")

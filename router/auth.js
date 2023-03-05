@@ -401,7 +401,11 @@ router.post('/getmatquestion', (req, res) => {
 })
 
 
-
+// USING PARAMS IN THE URL
+router.get('/usingparam/:id',(req,res)=>{
+    const {id} = req.params
+    res.send(id)
+})
 
 
 
