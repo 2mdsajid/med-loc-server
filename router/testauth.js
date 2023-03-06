@@ -56,7 +56,7 @@ async function addNewRepeatingTest() {
 
 }
 
-addNewRepeatingTest();
+// addNewRepeatingTest();
 // Set up an interval to run the addNewTest function every day at 4pm
 setInterval(() => {
     const now = new Date();
@@ -131,31 +131,73 @@ router.post('/saveusertotest', async (req, res) => {
 
 // GET THE TESTS IN FRONT END
 router.get('/getnewtest', async (req, res) => {
-    // console.log('notes')
 
-    newTestSchema.find({}, async function (err, array) { //exclude 3
+    // console.log('auth tests')
 
-        let newarray = [];
+    const tests = await newTestSchema.find()
+    let newarray = [];
+    // console.log(tests)
+    tests.map((test)=>{
+        if(test.category !== 'archive'){
+            // delete test.usersattended
 
-        await array.map((arr) => {
-
-            // REMOVING THE ATTENDED-USERS FROM THE TEST DATA
             const newobj = {
-                _id: arr._id,
-                testtitle: arr.testtitle,
-                testname: arr.testname,
-                physics: arr.physics,
-                chemistry: arr.chemistry,
-                biology: arr.biology,
-                mat: arr.mat,
-                time: arr.time,
-                category: arr.category
+                _id: test._id,
+                testtitle: test.testtitle,
+                testname: test.testname,
+                physics: test.physics,
+                chemistry: test.chemistry,
+                biology: test.biology,
+                mat: test.mat,
+                time: test.time,
+                category: test.category
             }
             newarray.push(newobj)
-        })
-        res.send(newarray)
-        // console.log('notes')
+        } else{
+            newarray.push(test)
+        }
+            // console.log(test.category)
     })
+
+    res.send(newarray)
+   
+
+    
+    // console.log('notes')
+
+    // newTestSchema.find({}, async function (err, array) { //exclude 3
+
+    //     let newarray = [];
+
+    //     await array.map((arr) => {
+
+    //         // REMOVING THE ATTENDED-USERS FROM THE TEST DATA
+            // const newobj = {
+            //     _id: arr._id,
+            //     testtitle: arr.testtitle,
+            //     testname: arr.testname,
+            //     physics: arr.physics,
+            //     chemistry: arr.chemistry,
+            //     biology: arr.biology,
+            //     mat: arr.mat,
+            //     time: arr.time,
+            //     category: arr.category,
+            //     usersattended:arr.usersattended
+            // }
+
+    //         // console.log(newobj)
+
+    //         if(arr.category == 'archive'){
+    //             newobj.usersattended = arr.usersattended
+    //             console.log(newobj)
+    //             console.log('users attended',arr.usersattended)
+    //         }
+
+    //         newarray.push(newobj)
+    //     })
+    //     res.send(array)
+    //     // console.log('notes')
+    // })
 
 })
 

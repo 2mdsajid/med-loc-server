@@ -53,16 +53,32 @@ const setDirectory = (floc) => {
 const upload = setDirectory('mat/')
 
 
-router.post('/saveimage', upload.single('avatar'), async function (req, res, next) {
+router.post('/addqnwithimage', upload.single('avatar'), async function (req, res, next) {
 
-    const { qn, a, b, c, d, ans } = req.body;
-    if (!qn || !a || !b || !c || !d || !ans) {
+    const addQuestion = async (qn, a, b, c, d, ans, category,img) => {
+        if (category == 'p') {
+            const physics = new Physics({ qn, a, b, c, d, ans, img })
+            return await physics.save()
+        } else if (category == 'c') {
+            const chemistry = new Chemistry({ qn, a, b, c, d, ans, img })
+            return await chemistry.save()
+        } else if (category == 'b') {
+            const biology = new Biology({ qn, a, b, c, d, ans, img })
+            return await biology.save()
+        } else {
+            const mat = new Mat({ qn, a, b, c, d, ans, img })
+            return await mat.save()
+        }
+    }
+
+    const { qn, a, b, c, d, ans, category } = req.body;
+    if (!qn || !a || !b || !c || !d || !ans || !category) {
         console.log("Please fill completely");
         return res.status(422).send("Please fill completely"); //422 - client error
     }
 
     const hostUrl = `${req.protocol}://${req.get('host')}`;
-    const dest = 'mat';
+    const dest = category;
     const newDir = `${DIR}${dest}/`;
 
     try {
@@ -75,20 +91,20 @@ router.post('/saveimage', upload.single('avatar'), async function (req, res, nex
         const origDest = `${DIR}mat/${req.file.filename}`;
         const newDest = `${newDir}${fileName}`;
 
+        // SETTING UL FOR DATABASE
+        const img = `${hostUrl}${DIR.slice(1)}${dest}/${fileName}`;
+        console.log(img)
+
         // MOVE THE PATH FROM TEST DIRECTORY TO A NEW ONE
         await fse.move(origDest, newDest);
 
-        // SETTING UL FOR DATABASE
-        const img = `${hostUrl}${DIR.slice(1)}${dest}/${fileName}`;
+        const saveQn = await addQuestion(qn, a, b, c, d, ans, category,img)
 
-        const mat = new Mat({ qn, a, b, c, d, ans, img })
-        const matSave = await mat.save()
-
-        if (matSave) {
-            res.status(201).json(' sent successfully')
+        if (saveQn) {
+            res.status(201).json({msg : `${category} sent successfully with image`})
             console.log(img)
         } else {
-            res.status(500).json('failed')
+            res.status(500).json({msg : `${category} sent successfully with image`})
             console.log("sent not successfully")
         }
 
@@ -97,6 +113,48 @@ router.post('/saveimage', upload.single('avatar'), async function (req, res, nex
     }
 })
 
+router.post('/addquestion', async (req, res) => {
+
+    const addQuestion = async (qn, a, b, c, d, ans, category) => {
+        if (category == 'p') {
+            const physics = new Physics({ qn, a, b, c, d, ans })
+            return await physics.save()
+        } else if (category == 'c') {
+            const chemistry = new Chemistry({ qn, a, b, c, d, ans })
+            return await chemistry.save()
+        } else if (category == 'b') {
+            const biology = new Biology({ qn, a, b, c, d, ans })
+            return await biology.save()
+        } else {
+            const mat = new Mat({ qn, a, b, c, d, ans, img })
+            return await mat.save()
+        }
+    }
+
+    const { qn, a, b, c, d, ans, category } = req.body
+
+    // VALIDATION
+    if (!qn || !a || !b || !c || !d || !ans || !category) {
+        console.log("please fill completely")
+        return res.status(422).send("please fill completely") //422 - client error
+    }
+
+    try {
+        // const question = new Question({ qn, a, b, c, d, ans })
+        const saveQn = addQuestion(qn, a, b, c, d, ans, category)
+
+        if (saveQn) {
+            res.status(201).json({msg : `${category} sent successfully withour image`})
+            console.log("sent successfully")
+        } else {
+            res.status(500).json({msg : `${category} can't be sent withour image`})
+            console.log("sent not successfully")
+        }
+
+    } catch (error) {
+        console.log(error)
+    }
+})
 
 /* SAVE NOTES TO DATABASE */
 router.post('/savenote', upload.array('note', 15), async function (req, res, next) {
@@ -113,8 +171,10 @@ router.post('/savenote', upload.array('note', 15), async function (req, res, nex
 
     const files = req.files
     const notetitle = req.body.notetitle
+    const notecategory = req.body.notecategory
     const noteimgname = req.body.noteimgname
     const notecontent = req.body.notecontent
+    const noteintro = req.body.noteintro
 
     const hostUrl = `${req.protocol}://${req.get('host')}`;
     const dest = 'notes';
@@ -151,16 +211,19 @@ router.post('/savenote', upload.array('note', 15), async function (req, res, nex
         dbObj.text = notecontent
         dbObj.imgs = contents
         dbObj.title = notetitle
+        dbObj.intro = noteintro
 
 
         // res.send({'content':dbObj})
 
         const newnote = new notesSchema({
             title: notetitle,
+            category: notecategory,
             imgname: noteimgname,
             notecontent: notecontent,
             imgurl: contents,
-            rooturl: rooturl[0]
+            rooturl: rooturl[0],
+            intro:noteintro
         })
 
         const saveNote = await newnote.save()
@@ -171,10 +234,10 @@ router.post('/savenote', upload.array('note', 15), async function (req, res, nex
         //     const matSave = await mat.save()
 
         if (saveNote) {
-            res.status(201).json(' sent successfully')
+            res.status(201).json({msg:`note ${notetitle} sent successfully`})
             console.log(saveNote)
         } else {
-            res.status(500).json('failed')
+            res.status(500).json({msg:`note ${notetitle} sent successfully`})
             console.log("sent not successfully")
         }
 
@@ -236,47 +299,6 @@ router.post('/addmatquestion', async (req, res) => {
 
 //will not show in local host bcoz it is POST not GET
 // SEND QUESTIONS INTO THE DATABASE
-router.post('/addquestion', async (req, res) => {
-
-    const addQuestion = async (qn, a, b, c, d, ans, category) => {
-        if (category == 'p') {
-            const physics = new Physics({ qn, a, b, c, d, ans })
-            return await physics.save()
-        } else if (category == 'c') {
-            const chemistry = new Chemistry({ qn, a, b, c, d, ans })
-            return await chemistry.save()
-        } else if (category == 'b') {
-            const biology = new Biology({ qn, a, b, c, d, ans })
-            return await biology.save()
-        } else {
-            return false
-        }
-    }
-
-    const { qn, a, b, c, d, ans, category } = req.body
-
-    // VALIDATION
-    if (!qn || !a || !b || !c || !d || !ans || !category) {
-        console.log("please fill completely")
-        return res.status(422).send("please fill completely") //422 - client error
-    }
-
-    try {
-        // const question = new Question({ qn, a, b, c, d, ans })
-        const saveQn = addQuestion(qn, a, b, c, d, ans, category)
-
-        if (saveQn) {
-            res.status(201).json(' sent successfully')
-            console.log("sent successfully")
-        } else {
-            res.status(500).json('failed')
-            console.log("sent not successfully")
-        }
-
-    } catch (error) {
-        console.log(error)
-    }
-})
 
 
 // SAVING TEST-USER DATA INTO DB
@@ -402,8 +424,8 @@ router.post('/getmatquestion', (req, res) => {
 
 
 // USING PARAMS IN THE URL
-router.get('/usingparam/:id',(req,res)=>{
-    const {id} = req.params
+router.get('/usingparam/:id', (req, res) => {
+    const { id } = req.params
     res.send(id)
 })
 

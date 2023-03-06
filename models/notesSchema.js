@@ -5,6 +5,10 @@ const note = mongoose.Schema({
         type: String,
         required: true
     },
+    category: {
+        type: String,
+        required: true
+    },
     imgname: {
         type: String,
         required: true
@@ -18,6 +22,10 @@ const note = mongoose.Schema({
         required: true
     },
     rooturl: {
+        type: String,
+        required: true
+    },
+    intro:{
         type: String,
         required: true
     }

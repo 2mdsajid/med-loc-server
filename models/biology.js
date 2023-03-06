@@ -24,6 +24,10 @@ const biology = mongoose.Schema({
     ans: {
         type: String,
         required: true
+    },
+    img:{
+        type: String,
+        required: true
     }
     
 }) 
