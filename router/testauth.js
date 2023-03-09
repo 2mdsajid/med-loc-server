@@ -15,11 +15,11 @@ async function addNewRepeatingTest() {
     // const suffix = 70
     // console.log('all data', newtest)
 
-    const testname = `dt${suffix}`
+    const testname = `dt${suffix}00`
 
     // Create a new instance of the NewTest model with the current date and time
     const newTest = new newTestSchema({
-        testtitle: `daily test ${suffix}`,
+        testtitle: `daily test ${suffix}00`,
         testname: testname,
         physics: '2',
         chemistry: '2',
@@ -51,7 +51,7 @@ async function addNewRepeatingTest() {
 
         console.log('removed',newtest.testtitle)
 
-    }, 60000);
+    }, 30000);
 
 
 }
@@ -63,11 +63,11 @@ setInterval(() => {
     const hours = now.getHours();
     const minutes = now.getMinutes();
 
-    //    addNewRepeatingTest();
+       addNewRepeatingTest();
 
 
 
-}, 10000); // Check every minute
+}, 30000); // Check every minute
 
 
 
