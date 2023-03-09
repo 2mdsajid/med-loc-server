@@ -9,13 +9,14 @@ const Physics = require('../models/physics')
 const Chemistry = require('../models/chemistry')
 const Biology = require('../models/biology')
 const TestUser = require('../models/testuser')
+const Mat = require('../models/mat')
+
 const notesSchema = require('../models/notesSchema')
 
 
 
 // image schema
 const ImageModel = require('../models/imageschema')
-const Mat = require('../models/mat')
 
 
 /* MULTER  */
@@ -52,29 +53,32 @@ const setDirectory = (floc) => {
 
 const upload = setDirectory('mat/')
 
+const addQuestion = async (qn, a, b, c, d, ans, chap, category, img) => {
+    if (category == 'p') {
+        const physics = new Physics({ qn, a, b, c, d, ans, chap, img })
+        return await physics.save()
+    } else if (category == 'c') {
+        const chemistry = new Chemistry({ qn, a, b, c, d, ans, chap, img })
+        return await chemistry.save()
+    } else if (category == 'b') {
+        const biology = new Biology({ qn, a, b, c, d, ans, chap, img })
+        return await biology.save()
+    } else if (category == 'm') {
+        const mat = new Mat({ qn, a, b, c, d, ans, chap, img })
+        return await mat.save()
+    }
+}
+
 
 router.post('/addqnwithimage', upload.single('avatar'), async function (req, res, next) {
 
-    const addQuestion = async (qn, a, b, c, d, ans, category,img) => {
-        if (category == 'p') {
-            const physics = new Physics({ qn, a, b, c, d, ans, img })
-            return await physics.save()
-        } else if (category == 'c') {
-            const chemistry = new Chemistry({ qn, a, b, c, d, ans, img })
-            return await chemistry.save()
-        } else if (category == 'b') {
-            const biology = new Biology({ qn, a, b, c, d, ans, img })
-            return await biology.save()
-        } else {
-            const mat = new Mat({ qn, a, b, c, d, ans, img })
-            return await mat.save()
-        }
-    }
-
-    const { qn, a, b, c, d, ans, category } = req.body;
-    if (!qn || !a || !b || !c || !d || !ans || !category) {
-        console.log("Please fill completely");
-        return res.status(422).send("Please fill completely"); //422 - client error
+    const { qn, a, b, c, d, ans, chap, category } = req.body;
+    if (!qn || !a || !b || !c || !d || !ans || !chap || !category) {
+        // console.log("Please fill completely");
+        return res.status(400).send({
+            message: 'one or more field incomplete',
+            status: 400
+        }); //422 - client error
     }
 
     const hostUrl = `${req.protocol}://${req.get('host')}`;
@@ -98,57 +102,52 @@ router.post('/addqnwithimage', upload.single('avatar'), async function (req, res
         // MOVE THE PATH FROM TEST DIRECTORY TO A NEW ONE
         await fse.move(origDest, newDest);
 
-        const saveQn = await addQuestion(qn, a, b, c, d, ans, category,img)
+        const saveQn = await addQuestion(qn, a, b, c, d, ans, chap, category, img)
 
         if (saveQn) {
-            res.status(201).json({msg : `${category} sent successfully with image`})
-            console.log(img)
+            res.status(200).json({
+                message: `${category} sent successfully with image`,
+                status: 200
+            })
+
         } else {
-            res.status(500).json({msg : `${category} sent successfully with image`})
-            console.log("sent not successfully")
+            res.status(400).json({
+                message: `${category} sent successfully with image`,
+                status: 400
+            })
         }
 
     } catch (error) {
-        console.log(error)
+        console.log('error in trycatch ', error)
     }
 })
 
 router.post('/addquestion', async (req, res) => {
 
-    const addQuestion = async (qn, a, b, c, d, ans, category) => {
-        if (category == 'p') {
-            const physics = new Physics({ qn, a, b, c, d, ans })
-            return await physics.save()
-        } else if (category == 'c') {
-            const chemistry = new Chemistry({ qn, a, b, c, d, ans })
-            return await chemistry.save()
-        } else if (category == 'b') {
-            const biology = new Biology({ qn, a, b, c, d, ans })
-            return await biology.save()
-        } else {
-            const mat = new Mat({ qn, a, b, c, d, ans, img })
-            return await mat.save()
-        }
-    }
-
-    const { qn, a, b, c, d, ans, category } = req.body
+    const { qn, a, b, c, d, ans, chap, category } = req.body
 
     // VALIDATION
-    if (!qn || !a || !b || !c || !d || !ans || !category) {
+    if (!qn || !a || !b || !c || !d || !ans || !chap || !category) {
         console.log("please fill completely")
         return res.status(422).send("please fill completely") //422 - client error
     }
 
     try {
         // const question = new Question({ qn, a, b, c, d, ans })
-        const saveQn = addQuestion(qn, a, b, c, d, ans, category)
+        const saveQn = addQuestion(qn, a, b, c, d, ans, chap, category,'')
 
         if (saveQn) {
-            res.status(201).json({msg : `${category} sent successfully withour image`})
-            console.log("sent successfully")
+            res.status(200).json({
+                message: `${category} sent successfully withour image`,
+                satus: 200
+            })
+            
         } else {
-            res.status(500).json({msg : `${category} can't be sent withour image`})
-            console.log("sent not successfully")
+            res.status(400).json({
+                message: `${category} can't be sent without image`,
+                status: 400
+            })
+    
         }
 
     } catch (error) {
@@ -223,7 +222,7 @@ router.post('/savenote', upload.array('note', 15), async function (req, res, nex
             notecontent: notecontent,
             imgurl: contents,
             rooturl: rooturl[0],
-            intro:noteintro
+            intro: noteintro
         })
 
         const saveNote = await newnote.save()
@@ -234,10 +233,10 @@ router.post('/savenote', upload.array('note', 15), async function (req, res, nex
         //     const matSave = await mat.save()
 
         if (saveNote) {
-            res.status(201).json({msg:`note ${notetitle} sent successfully`})
+            res.status(201).json({ msg: `note ${notetitle} sent successfully` })
             console.log(saveNote)
         } else {
-            res.status(500).json({msg:`note ${notetitle} sent successfully`})
+            res.status(500).json({ msg: `note ${notetitle} sent successfully` })
             console.log("sent not successfully")
         }
 

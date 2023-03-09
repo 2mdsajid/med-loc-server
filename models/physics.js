@@ -25,9 +25,13 @@ const physics = mongoose.Schema({
         type: String,
         required: true
     },
-    img:{
+    chap: {
         type: String,
         required: true
+    },
+    img:{
+        type: String,
+        default:""
     }
     
 }) 

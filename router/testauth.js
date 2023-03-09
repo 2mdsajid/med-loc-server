@@ -13,7 +13,7 @@ async function addNewRepeatingTest() {
     const newtest = await newTestSchema.find({ category: 'dailytest' })
     //const suffix =  newtest.length
     const suffix = 70
-    console.log('all data',newtest)
+    console.log('all data', newtest)
 
     const testname = `dt${suffix}`
 
@@ -26,10 +26,10 @@ async function addNewRepeatingTest() {
         biology: '2',
         mat: '2',
         time: {
-            type:'timed',
-            value:'2',
-            duration:'1',
-            repeatafter:'1'
+            type: 'timed',
+            value: '2',
+            duration: '1',
+            repeatafter: '1'
         },
         category: 'dailytest'
     });
@@ -39,7 +39,7 @@ async function addNewRepeatingTest() {
         if (err) {
             console.error(err);
         } else {
-            console.log('New test added successfully',newTest.testname);
+            console.log('New test added successfully', newTest.testname);
         }
     });
 
@@ -62,9 +62,9 @@ setInterval(() => {
     const now = new Date();
     const hours = now.getHours();
     const minutes = now.getMinutes();
-  
-//    addNewRepeatingTest();
-   
+
+    //    addNewRepeatingTest();
+
 
 
 }, 10000); // Check every minute
@@ -80,7 +80,10 @@ router.post('/addnewtest', async (req, res) => {
     // VALIDATION
     if (!testtitle || !testname || !physics || !chemistry || !biology || !mat || !time || !category) {
         console.log("please fill completely")
-        return res.status(422).send("please fill completely") //422 - client error
+        return res.status(400).send({
+            message: 'one or more field is empty',
+            status: 400
+        }) //422 - client error
     }
 
     try {
@@ -89,15 +92,20 @@ router.post('/addnewtest', async (req, res) => {
         const savenewtest = newtest.save()
 
         if (savenewtest) {
-            res.status(201).json('test sent successfully')
-            console.log("test sent successfully")
+            res.status(200).json({
+                message: 'new test added successfully',
+                status: 200
+            })
+
         } else {
-            res.status(500).json('failed')
-            console.log("test sent not successfully")
+            res.status(400).json({
+                message: 'unable to send the test',
+                status: 400
+            })
         }
 
     } catch (error) {
-        console.log(error)
+        console.log('error in trycatch', error)
     }
 
 })
@@ -137,8 +145,8 @@ router.get('/getnewtest', async (req, res) => {
     const tests = await newTestSchema.find()
     let newarray = [];
     // console.log(tests)
-    tests.map((test)=>{
-        if(test.category !== 'archive'){
+    tests.map((test) => {
+        if (test.category !== 'archive') {
             // delete test.usersattended
 
             const newobj = {
@@ -153,16 +161,16 @@ router.get('/getnewtest', async (req, res) => {
                 category: test.category
             }
             newarray.push(newobj)
-        } else{
+        } else {
             newarray.push(test)
         }
-            // console.log(test.category)
+        // console.log(test.category)
     })
 
     res.send(newarray)
-   
 
-    
+
+
     // console.log('notes')
 
     // newTestSchema.find({}, async function (err, array) { //exclude 3
@@ -172,18 +180,18 @@ router.get('/getnewtest', async (req, res) => {
     //     await array.map((arr) => {
 
     //         // REMOVING THE ATTENDED-USERS FROM THE TEST DATA
-            // const newobj = {
-            //     _id: arr._id,
-            //     testtitle: arr.testtitle,
-            //     testname: arr.testname,
-            //     physics: arr.physics,
-            //     chemistry: arr.chemistry,
-            //     biology: arr.biology,
-            //     mat: arr.mat,
-            //     time: arr.time,
-            //     category: arr.category,
-            //     usersattended:arr.usersattended
-            // }
+    // const newobj = {
+    //     _id: arr._id,
+    //     testtitle: arr.testtitle,
+    //     testname: arr.testname,
+    //     physics: arr.physics,
+    //     chemistry: arr.chemistry,
+    //     biology: arr.biology,
+    //     mat: arr.mat,
+    //     time: arr.time,
+    //     category: arr.category,
+    //     usersattended:arr.usersattended
+    // }
 
     //         // console.log(newobj)
 

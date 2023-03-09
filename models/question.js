@@ -24,6 +24,10 @@ const question = mongoose.Schema({
     ans: {
         type: String,
         required: true
+    },
+    chap: {
+        type: String,
+        required: true
     }
     
 }) 
