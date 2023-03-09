@@ -11,7 +11,7 @@ const AuthUserMiddleware = async (req, res, next) => {
 
         // get the token from the Authorization header
         const logintoken = req.body.logintoken
-        console.log('logintoken in auth',logintoken)
+        // console.log('logintoken in auth',logintoken)
 
         // console.log('cookie', req.cookies.token);
         // get the token
