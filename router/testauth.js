@@ -11,9 +11,9 @@ async function addNewRepeatingTest() {
     // Getting the total tests with that category
     // const newtest = await newTestSchema.find()
     const newtest = await newTestSchema.find({ category: 'dailytest' })
-    //const suffix =  newtest.length
-    const suffix = 70
-    console.log('all data', newtest)
+    const suffix =  newtest.length
+    // const suffix = 70
+    // console.log('all data', newtest)
 
     const testname = `dt${suffix}`
 
@@ -27,8 +27,8 @@ async function addNewRepeatingTest() {
         mat: '2',
         time: {
             type: 'timed',
-            value: '2',
-            duration: '1',
+            value: '22',
+            duration: '120',
             repeatafter: '1'
         },
         category: 'dailytest'
@@ -39,7 +39,7 @@ async function addNewRepeatingTest() {
         if (err) {
             console.error(err);
         } else {
-            console.log('New test added successfully', newTest.testname);
+            console.log('New test added successfully', newTest.testtitle);
         }
     });
 
@@ -49,9 +49,9 @@ async function addNewRepeatingTest() {
         const archive = await newtest.changeCategoryValue()
         await newtest.save()
 
-        console.log(newtest)
+        console.log('removed',newtest.testtitle)
 
-    }, 1800000);
+    }, 60000);
 
 
 }
