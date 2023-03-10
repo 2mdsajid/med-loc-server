@@ -4,6 +4,14 @@ const AuthUserMiddleware = require('../middlewares/AuthUserMiddleware')
 
 const newTestSchema = require('../models/newTestSchema')
 
+
+function generateSingleDigitRandomNumber() {
+    // Generate a random number between 0 and 9 (inclusive)
+    const randomNumber = Math.floor(Math.random() * 10);
+    return randomNumber;
+  }
+  
+
 //making a commit
 
 // Set up a function to add a new test every day at 4pm
@@ -15,11 +23,13 @@ async function addNewRepeatingTest() {
     // const suffix = 70
     // console.log('all data', newtest)
 
-    const testname = `dt${suffix}00`
+    const randomNumber = generateSingleDigitRandomNumber();
+
+    const testname = `dt${suffix}00-${randomNumber}`
 
     // Create a new instance of the NewTest model with the current date and time
     const newTest = new newTestSchema({
-        testtitle: `daily test ${suffix}00`,
+        testtitle: `daily test ${suffix}00-${randomNumber}`,
         testname: testname,
         physics: '2',
         chemistry: '2',
@@ -40,18 +50,21 @@ async function addNewRepeatingTest() {
             console.error(err);
         } else {
             console.log('New test added successfully', newTest.testtitle);
+
+            const removeNewRepeatingTest = setInterval(async () => {
+                const newtest = await newTestSchema.findOne({ testname: testname })
+                const archive = await newtest.changeCategoryValue()
+                await newtest.save()
+        
+                console.log('removed',newtest.testtitle)
+
+                clearInterval(removeNewRepeatingTest)
+        
+            }, 30000);
+
+
         }
     });
-
-
-    const removeNewRepeatingTest = setInterval(async () => {
-        const newtest = await newTestSchema.findOne({ testname: testname })
-        const archive = await newtest.changeCategoryValue()
-        await newtest.save()
-
-        console.log('removed',newtest.testtitle)
-
-    }, 30000);
 
 
 }

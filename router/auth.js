@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 let app = express()
+const Status = require('../models/StatusModel')
 
 // .. --> bcoz its inside a folder
 // to define thw QUESTION schema and SAVE it in db
@@ -428,6 +429,26 @@ router.get('/usingparam/:id', (req, res) => {
     res.send(id)
 })
 
+router.get('/addvisitors',async(req,res)=>{
+
+    const status = new Status({
+        visitors: 0,
+        newvisitors: 0,
+        liveconnected: []
+    })
+    
+    status.save()
+
+    // const status = await Status.find()
+    // const visitors = await newtest.addVisitor()
+    // status.save()
+
+    // res.status(200).json({
+    //     message:'added visitor',
+    //     status:200
+    // })
+
+})
 
 
 module.exports = router;

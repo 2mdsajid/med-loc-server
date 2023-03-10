@@ -1,41 +1,40 @@
 const mongoose = require("mongoose")
 
-const chemistry = mongoose.Schema({
-    qn: {
-        type: String,
-        required: true
+const status = mongoose.Schema({
+    visitors: {
+        type: Number,
+        required: true,
+        default: 0
     },
-    a: {
-        type: String,
-        required: true
+    newvisitors: {
+        type: Number,
+        required: true,
+        default: 0
     },
-    b: {
-        type: String,
-        required: true
-    },
-    c: {
-        type: String,
-        required: true
-    },
-    d: {
-        type: String,
-        required: true
-    },
-    ans: {
-        type: String,
-        required: true
-    },
-    chap: {
-        type: String,
-        required: true
-    },
-    img:{
-        type: String,
-        default:""
+    liveconnected: {
+        type: Array,
+        default: []
     }
     
 }) 
 
-const Chemistry = mongoose.model('CHEMISTRY',chemistry)
 
-module.exports = Chemistry
+
+status.methods.addLiveConnectedUser = function(user) {
+    this.liveconnected.push(user)
+    return this.save()
+  }
+
+  status.methods.addNewVisitor = function() {
+    this.newvisitors++
+    return this.save()
+  }
+
+  status.methods.addVisitor = function() {
+    this.visitors++
+    return this.save()
+  }
+
+const Status = mongoose.model('STATUS',status)
+
+module.exports = Status

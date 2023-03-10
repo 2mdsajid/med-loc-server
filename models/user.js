@@ -81,6 +81,10 @@ const user = mongoose.Schema({
                     }
                 }
             ],
+            testid: {
+                type: String,
+                required: true
+            },
             date: {
                 type: Date,
                 default: Date.now
@@ -113,15 +117,14 @@ user.methods.GenerateAuthToken = async function () {
 }
 
 // STORE TESTS DATA FOR SPECIFIC USERS
-user.methods.addTest = async function (testmode, testtitle, totalscore, totalwrong, unattempt, totaltimetaken,questions) {
+user.methods.addTest = async function (testmode, testtitle, totalscore, totalwrong, unattempt, totaltimetaken,questions,testid) {
     try {
         //this => selecting the current user (schema)
         //this.tests => the tests of the user
         // replacing original this.tests by new after concating the new values
 
-        // console.log('questions in userschema add method',questions)
-        // this.tests.questions = this.tests.questions.concat(questions)
-        this.tests = this.tests.concat({ testmode, testtitle, totalscore, totalwrong, unattempt, totaltimetaken,questions })
+        console.log('testid in schema',testid)
+        this.tests = this.tests.concat({ testmode, testtitle, totalscore, totalwrong, unattempt, totaltimetaken,questions,testid })
         await this.save()
         return this.tests
     } catch (error) {

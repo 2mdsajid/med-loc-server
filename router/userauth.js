@@ -52,7 +52,7 @@ router.post('/usersignup', async (req, res) => {
 router.post('/addtestdata', AuthUserMiddleware, async (req, res) => {
     try {
 
-        const { logintoken, testmode, testtitle, totalscore, totalwrong, unattempt, totaltimetaken, questions } = req.body
+        const { logintoken, testmode, testtitle, totalscore, totalwrong, unattempt, totaltimetaken, questions, testid } = req.body
 
         //  req.id == _id (for db) 
         // coming from the AuthUserMiddleware
@@ -60,15 +60,30 @@ router.post('/addtestdata', AuthUserMiddleware, async (req, res) => {
 
         if (user) {
             // calling the ADDTEST method to send data to the user schema
-            const usertest = await user.addTest(testmode, testtitle, totalscore, totalwrong, unattempt, totaltimetaken, questions)
+            const usertest = await user.addTest(testmode, testtitle, totalscore, totalwrong, unattempt, totaltimetaken, questions,testid)
             await user.save() //save to user not usertest
 
-            res.status(201).json(usertest)
-            console.log('test data sent successfully')
+            const newuser = {
+                id: user._id,
+                username: user.username,
+                email: user.email,
+                tests: user.tests
+            }
+
+            res.status(200).json({
+                user:newuser,
+                message:'Successfully added test in user database',
+                status:200
+            })
+        } else{
+            res.status(400).json({
+                message:'User not logged in',
+                status:400
+            })
         }
 
     } catch (error) {
-        console.log(error)
+        console.log('error in trycatch',error)
     }
 })
 
