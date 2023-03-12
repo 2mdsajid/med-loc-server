@@ -37,7 +37,7 @@ async function addNewRepeatingTest() {
         mat: '2',
         time: {
             type: 'timed',
-            value: '22',
+            value: '17',
             duration: '120',
             repeatafter: '1'
         },
@@ -60,7 +60,7 @@ async function addNewRepeatingTest() {
 
                 clearInterval(removeNewRepeatingTest)
         
-            }, 30000);
+            }, 3000000);
 
 
         }
