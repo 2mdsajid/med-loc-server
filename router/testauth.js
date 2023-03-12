@@ -15,7 +15,7 @@ function generateSingleDigitRandomNumber() {
 //making a commit
 
 // Set up a function to add a new test every day at 4pm
-async function addNewRepeatingTest() {
+async function addNewRepeatingTest(exptime,testtime) {
     // Getting the total tests with that category
     // const newtest = await newTestSchema.find()
     const newtest = await newTestSchema.find({ category: 'dailytest' })
@@ -29,7 +29,7 @@ async function addNewRepeatingTest() {
 
     // Create a new instance of the NewTest model with the current date and time
     const newTest = new newTestSchema({
-        testtitle: `daily test ${suffix}00-${randomNumber}`,
+        testtitle: `daily test ${suffix}-${randomNumber}`,
         testname: testname,
         physics: '2',
         chemistry: '2',
@@ -37,7 +37,7 @@ async function addNewRepeatingTest() {
         mat: '2',
         time: {
             type: 'timed',
-            value: '17',
+            value: testtime,
             duration: '120',
             repeatafter: '1'
         },
@@ -49,7 +49,7 @@ async function addNewRepeatingTest() {
         if (err) {
             console.error(err);
         } else {
-            console.log('New test added successfully', newTest.testtitle);
+            console.log(`New test added successfully with exp time ${exptime}`, newTest.testtitle);
 
             const removeNewRepeatingTest = setInterval(async () => {
                 const newtest = await newTestSchema.findOne({ testname: testname })
@@ -60,8 +60,7 @@ async function addNewRepeatingTest() {
 
                 clearInterval(removeNewRepeatingTest)
         
-            }, 3000000);
-
+            }, exptime);
 
         }
     });
@@ -69,18 +68,27 @@ async function addNewRepeatingTest() {
 
 }
 
-// addNewRepeatingTest();
+// addNewRepeatingTest(15000);
+// addNewRepeatingTest(10000);
+// addNewRepeatingTest(5000);
 // Set up an interval to run the addNewTest function every day at 4pm
 setInterval(() => {
     const now = new Date();
     const hours = now.getHours();
     const minutes = now.getMinutes();
+    console.log('running every 3 min')
+    console.log(hours,minutes)
 
-    //    addNewRepeatingTest();
+    if(hours===12 && minutes ===0){
+           addNewRepeatingTest(25200000,17);
+        } else if (hours===19 && minutes==8){
+        addNewRepeatingTest(14400000,21);
+    }
 
 
 
-}, 30000); // Check every minute
+
+}, 60000); // Check every minute
 
 
 
@@ -183,42 +191,35 @@ router.get('/getnewtest', async (req, res) => {
     res.send(newarray)
 
 
+})
+// GET THE TESTS IN FRONT END
+router.get('/getarchivetest', async (req, res) => {
 
-    // console.log('notes')
+    try {
 
-    // newTestSchema.find({}, async function (err, array) { //exclude 3
+        const tests = await newTestSchema.find({ category: 'archive' })
 
-    //     let newarray = [];
+    if (tests){
 
-    //     await array.map((arr) => {
+        res.status(200).json({
+            tests:tests,
+            message:'successfully fetched archive tests',
+            status:200
+        })
+    } else{
 
-    //         // REMOVING THE ATTENDED-USERS FROM THE TEST DATA
-    // const newobj = {
-    //     _id: arr._id,
-    //     testtitle: arr.testtitle,
-    //     testname: arr.testname,
-    //     physics: arr.physics,
-    //     chemistry: arr.chemistry,
-    //     biology: arr.biology,
-    //     mat: arr.mat,
-    //     time: arr.time,
-    //     category: arr.category,
-    //     usersattended:arr.usersattended
-    // }
+        res.status(400).json({
+            message:'Unable to fetch archive tests',
+            status:400
+        })
 
-    //         // console.log(newobj)
+    }
+        
+    } catch (error) {
+        console.log('Error in trycatch',error)
+    }
 
-    //         if(arr.category == 'archive'){
-    //             newobj.usersattended = arr.usersattended
-    //             console.log(newobj)
-    //             console.log('users attended',arr.usersattended)
-    //         }
 
-    //         newarray.push(newobj)
-    //     })
-    //     res.send(array)
-    //     // console.log('notes')
-    // })
 
 })
 
