@@ -79,16 +79,16 @@ setInterval(() => {
     // console.log('running every 3 min')
     // console.log(hours,minutes)
 
-    if(hours===20 && minutes ===12){
-           addNewRepeatingTest(25200000,21);
-        } else if (hours===20 && minutes==15)
+//     if(hours===8 && minutes ===12){
+//            addNewRepeatingTest(25200000,21);
+//         } else if (hours===13 && minutes==00)
 //     console.log('running every 3 min')
 //     console.log(hours,minutes)
 
-    if(hours===17 && minutes ===20){
-           addNewRepeatingTest(25200000,18);
-        } else if (hours===19 && minutes==8){
-        addNewRepeatingTest(14400000,21);
+    if(hours===8 && minutes ===10){
+           addNewRepeatingTest(25200000,17);
+        } else if (hours===13 && minutes==5){
+        addNewRepeatingTest(14400000,20);
     }
 }, 60000); // Check every minute
 
