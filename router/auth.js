@@ -434,22 +434,26 @@ router.get('/usingparam/:id', (req, res) => {
 
 router.get('/addvisitors', async (req, res) => {
 
-    const status = new Status({
-        visitors: 0,
-        newvisitors: 0,
-        liveconnected: []
-    })
+    // const status = new Status({
+    //     visitors: 0,
+    //     newvisitors: 0,
+    //     liveconnected: []
+    // })
 
-    status.save()
-
-    // const status = await Status.find()
-    // const visitors = await newtest.addVisitor()
     // status.save()
 
-    // res.status(200).json({
-    //     message:'added visitor',
-    //     status:200
-    // })
+    const status = await Status.findOne({_id:'640f5c9974fe0fc87a48fe47'})
+
+    console.log(status)
+
+
+    const visitors = await status.addVisitor()
+    status.save()
+
+    res.status(200).json({
+        message:'added visitor',
+        status:200
+    })
 
 })
 
