@@ -9,17 +9,17 @@ function generateSingleDigitRandomNumber() {
     // Generate a random number between 0 and 9 (inclusive)
     const randomNumber = Math.floor(Math.random() * 10);
     return randomNumber;
-  }
-  
+}
+
 
 //making a commit
 
 // Set up a function to add a new test every day at 4pm
-async function addNewRepeatingTest(exptime,testtime) {
+async function addNewRepeatingTest(exptime, testtime) {
     // Getting the total tests with that category
     // const newtest = await newTestSchema.find()
     const newtest = await newTestSchema.find({ category: 'dailytest' })
-    const suffix =  newtest.length
+    const suffix = newtest.length
     // const suffix = 70
     // console.log('all data', newtest)
 
@@ -55,11 +55,11 @@ async function addNewRepeatingTest(exptime,testtime) {
                 const newtest = await newTestSchema.findOne({ testname: testname })
                 const archive = await newtest.changeCategoryValue()
                 await newtest.save()
-        
-                console.log('removed',newtest.testtitle)
+
+                console.log('removed', newtest.testtitle)
 
                 clearInterval(removeNewRepeatingTest)
-        
+
             }, exptime);
 
         }
@@ -76,18 +76,14 @@ setInterval(() => {
     const now = new Date();
     const hours = now.getHours();
     const minutes = now.getMinutes();
-    console.log('running every 3 min')
-    console.log(hours,minutes)
+    // console.log('running every 3 min')
+    // console.log(hours,minutes)
 
-    if(hours===12 && minutes ===0){
-           addNewRepeatingTest(25200000,17);
-        } else if (hours===19 && minutes==8){
+    if(hours===20 && minutes ===12){
+           addNewRepeatingTest(25200000,21);
+        } else if (hours===20 && minutes==15){
         addNewRepeatingTest(14400000,21);
     }
-
-
-
-
 }, 60000); // Check every minute
 
 
@@ -158,6 +154,29 @@ router.post('/saveusertotest', async (req, res) => {
     }
 })
 
+// ADD ATTENDED USERS AFTER THE TEST
+router.post('/saveconnectedusers', async (req, res) => {
+    try {
+
+        const { id, username } = req.body
+
+        const newtest = await newTestSchema.findOne({ _id: id })
+
+        if (newtest) {
+            // calling the ADDTEST method to send data to the user schema
+            const attendeduser = await newtest.addConnectedUsers(username)
+            await newtest.save() //save to newtest not usertest
+
+            // res.status(201).json({msg:'sent successfully'})
+            res.send({ users: newtest.usersconnected })
+            // console.log('test data sent successfully')
+        }
+
+    } catch (error) {
+        console.log(error)
+    }
+})
+
 // GET THE TESTS IN FRONT END
 router.get('/getnewtest', async (req, res) => {
 
@@ -194,33 +213,46 @@ router.get('/getnewtest', async (req, res) => {
 })
 // GET THE TESTS IN FRONT END
 router.get('/getarchivetest', async (req, res) => {
-
     try {
-
         const tests = await newTestSchema.find({ category: 'archive' })
+        if (tests) {
+            res.status(200).json({
+                tests: tests,
+                message: 'successfully fetched archive tests',
+                status: 200
+            })
+        } else {
+            res.status(400).json({
+                message: 'Unable to fetch archive tests',
+                status: 400
+            })
+        }
 
-    if (tests){
-
-        res.status(200).json({
-            tests:tests,
-            message:'successfully fetched archive tests',
-            status:200
-        })
-    } else{
-
-        res.status(400).json({
-            message:'Unable to fetch archive tests',
-            status:400
-        })
-
-    }
-        
     } catch (error) {
-        console.log('Error in trycatch',error)
+        console.log('Error in trycatch', error)
     }
+})
 
+// GET THE TESTS IN FRONT END
+router.get('/getdailytests', async (req, res) => {
+    try {
+        const tests = await newTestSchema.find({ category: 'dailytest' })
+        if (tests) {
+            res.status(200).json({
+                tests: tests,
+                message: 'successfully fetched Daily tests',
+                status: 200
+            })
+        } else {
+            res.status(400).json({
+                message: 'Unable to fetch daily tests',
+                status: 400
+            })
+        }
 
-
+    } catch (error) {
+        console.log('Error in trycatch', error)
+    }
 })
 
 // SHOW OVERALL RESULT

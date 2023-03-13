@@ -107,13 +107,13 @@ router.post('/addqnwithimage', upload.single('avatar'), async function (req, res
 
         if (saveQn) {
             res.status(200).json({
-                message: `${category} sent successfully with image`,
+                message: `Question sent successfully with image`,
                 status: 200
             })
 
         } else {
             res.status(400).json({
-                message: `${category} sent successfully with image`,
+                message: `Unable to send the question`,
                 status: 400
             })
         }
@@ -129,26 +129,29 @@ router.post('/addquestion', async (req, res) => {
 
     // VALIDATION
     if (!qn || !a || !b || !c || !d || !ans || !chap || !category) {
-        console.log("please fill completely")
-        return res.status(422).send("please fill completely") //422 - client error
+        // console.log("please fill completely")
+        return res.status(400).json({
+            message: "please fill completely",
+            status: 400
+        }) //422 - client error
     }
 
     try {
         // const question = new Question({ qn, a, b, c, d, ans })
-        const saveQn = addQuestion(qn, a, b, c, d, ans, chap, category,'')
+        const saveQn = addQuestion(qn, a, b, c, d, ans, chap, category, '')
 
         if (saveQn) {
             res.status(200).json({
-                message: `${category} sent successfully withour image`,
+                message: `Question sent successfully without image`,
                 satus: 200
             })
-            
+
         } else {
             res.status(400).json({
-                message: `${category} can't be sent without image`,
+                message: `Unable to send the question`,
                 status: 400
             })
-    
+
         }
 
     } catch (error) {
@@ -429,14 +432,14 @@ router.get('/usingparam/:id', (req, res) => {
     res.send(id)
 })
 
-router.get('/addvisitors',async(req,res)=>{
+router.get('/addvisitors', async (req, res) => {
 
     const status = new Status({
         visitors: 0,
         newvisitors: 0,
         liveconnected: []
     })
-    
+
     status.save()
 
     // const status = await Status.find()

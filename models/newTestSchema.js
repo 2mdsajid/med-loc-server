@@ -52,6 +52,10 @@ const newtest = mongoose.Schema({
         required: true,
         default: false
     },
+    usersconnected: {
+        type: Array,
+        default: []
+    },
     usersattended: [
         {
             username: {
@@ -81,6 +85,18 @@ newtest.methods.addAttendedUsers = async function (username, totalscore) {
         this.usersattended = this.usersattended.concat({ username, totalscore })
         await this.save()
         return this.usersattended
+    } catch (error) {
+        console.log(error);
+    }
+
+}
+
+// STORE TESTS DATA FOR SPECIFIC USERS
+newtest.methods.addConnectedUsers = async function (username) {
+    try {
+        this.usersconnected = this.usersconnected.concat(username)
+        await this.save()
+        return this.usersconnected
     } catch (error) {
         console.log(error);
     }
