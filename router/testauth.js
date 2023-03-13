@@ -75,13 +75,19 @@ async function addNewRepeatingTest(exptime, testtime) {
 setInterval(() => {
     const now = new Date();
     const hours = now.getHours();
-    const minutes = now.getMinutes();
+    const minutes = now.getMinutes()
     // console.log('running every 3 min')
     // console.log(hours,minutes)
 
     if(hours===20 && minutes ===12){
            addNewRepeatingTest(25200000,21);
-        } else if (hours===20 && minutes==15){
+        } else if (hours===20 && minutes==15)
+//     console.log('running every 3 min')
+//     console.log(hours,minutes)
+
+    if(hours===17 && minutes ===20){
+           addNewRepeatingTest(25200000,18);
+        } else if (hours===19 && minutes==8){
         addNewRepeatingTest(14400000,21);
     }
 }, 60000); // Check every minute
