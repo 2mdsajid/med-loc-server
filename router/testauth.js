@@ -76,11 +76,11 @@ setInterval(() => {
     const now = new Date();
     const hours = now.getHours();
     const minutes = now.getMinutes();
-    console.log('running every 3 min')
-    console.log(hours,minutes)
+//     console.log('running every 3 min')
+//     console.log(hours,minutes)
 
-    if(hours===12 && minutes ===0){
-           addNewRepeatingTest(25200000,17);
+    if(hours===17 && minutes ===20){
+           addNewRepeatingTest(25200000,18);
         } else if (hours===19 && minutes==8){
         addNewRepeatingTest(14400000,21);
     }
