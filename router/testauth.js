@@ -91,7 +91,7 @@ setInterval(() => {
         addNewRepeatingTest(14400000,21);
     }
     
-    addNewRepeatingTest(300000,21);
+//     addNewRepeatingTest(300000,21);
 
 
 }, 60000); // Check every minute
